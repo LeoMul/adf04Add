@@ -1,6 +1,8 @@
 program adf04_add 
-    !lpm 24.06.25
-    !adds two adf04 files. 
+    !Leo Patrick Mulholland
+    !Queen's University Belfast (2025)
+    
+    !This program adds two adf04 files. 
     !Reads in all the transitions from file1 (call these t1)
     !Reads in each transition in file2 (call these t2)
     !If t2 corresponds to a transitiion t1 - add them and print out.
@@ -17,6 +19,13 @@ program adf04_add
     !This leads to the (probably incredibly) inefficient string manipulations required here.
     !This said, typically an adf04 is probably not more than 1 GB - so perhaps we can live
     !with a speed decrease here.
+
+    !Additionally - this is a dumb code. 
+    !It knows precisely nothing about your atomic stucture, 
+    !A-values, shifting, angular identifications or political affiliations.
+    !It is at the discretion of the user to correctly add files that correspond to the 
+    !same level indices, and importantly the same ion.
+
 
     implicit none 
     integer,parameter :: maxIter = 10000
@@ -216,8 +225,8 @@ program adf04_add
     10 FORMAT(2I4,ES10.2,14ES10.2,ES10.2)
     close(1)
 
-    11 FORMAT('ADDED BY ')
-
+    11 FORMAT('C Resultant adf04 file, produced by https://github.com/LeoMul/adf04Add.')
+    write(2,11)
     close(2)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -257,6 +266,11 @@ program adf04_add
         !converts A.BC+DE 
         ! or      A.BC-DE
         !to A.BC \times 10 ^{DE}
+        !or:
+        !converts
+        !converts -A.BC+DE 
+        ! or      -A.BC-DE
+        !to -A.BC \times 10 ^{DE}
         real*8 :: mantessa 
         integer :: exponent 
         real*8 :: float
