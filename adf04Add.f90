@@ -121,7 +121,8 @@ program adf04_add
         if (yy.eq.-1) exit
         lower = min(zz,yy)
         upper = max(zz,yy)
-        pp = upper-1 + numLevels * (lower-1)
+        !pp = upper-1 + numLevels * (lower-1)
+        pp = upperTriangleIndexing(lower,upper,numLevels)
         pointer1(pp) = 1
         offset = 0
         avalues(pp) = a8toFloat(templine(1+offset:1+offset+7))
@@ -184,8 +185,10 @@ program adf04_add
         if (yy.eq.-1) exit
         lower = min(zz,yy)
         upper = max(zz,yy)
-        !currentpointer = lower + numLevels * upper
-        pp = upper-1 + numLevels * (lower-1)
+        !pp = upper-1 + numLevels * (lower-1)
+        !pp = upper + (lower * (lower + 1))/2 
+        pp = upperTriangleIndexing(lower,upper,numLevels)
+!
         offset = 0
         if (pointer1(pp) > 0 ) then 
             !if this transition is in the first file, read it and add it.
@@ -202,8 +205,14 @@ program adf04_add
     end do 
     print*,'uhhh'
     do upper = 2,numLevels 
-    do lower = 1,min(upper-1,6) 
-        ii = upper-1 + numLevels * (lower-1)
+
+    do lower = 1,upper-1
+
+!        ii = upper-1 + numLevels * (lower-1)
+!       lower tria
+!        ii = upper + (lower * (lower + 1))/2 
+!        
+        ii = upperTriangleIndexing(lower,upper,numLevels)
         print*,upper,lower,'--->',ii
     !do ii = 1 ,maxNumTransitions 
         pp = pointer1(ii)
@@ -212,7 +221,7 @@ program adf04_add
             !upper = mod(ii,numLevels) + 1 
             !lower= (ii+1 - upper) / numLevels + 1 
             !print*,upper,lower,ii
-            write(2,'(2I5)',advance='no') upper,lower
+            write(2,'(2I4)',advance='no') upper,lower
             write(dummyUpsilon,31) avalues(ii)
             write(2,33,advance='no') dummyUpsilon(1:4)
             write(2,34,advance='no') dummyUpsilon(6:8)
@@ -375,5 +384,13 @@ end do
         end do
 
     end subroutine
+
+    function upperTriangleIndexing(lower,upper,rowsize)
+        integer :: lower, upper,rowsize 
+        integer :: upperTriangleIndexing 
+        if(lower.ge.upper) stop 'error'
+        upperTriangleIndexing = (lower - 1) * rowsize  + &
+            upper - lower - (lower*(lower-1))/2
+    end function 
 
 end program adf04_add
